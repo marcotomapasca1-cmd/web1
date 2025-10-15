@@ -1,0 +1,2761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIBRERÍA ROKIS - Libros y Más</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="books" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="none"/><text x="10" y="15" text-anchor="middle" font-size="12" fill="rgba(255,255,255,0.1)">📚</text></pattern></defs><rect width="100" height="100" fill="url(%23books)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        .card-hover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .card-hover:hover::before {
+            left: 100%;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .floating-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(1deg); }
+            50% { transform: translateY(-10px) rotate(0deg); }
+            75% { transform: translateY(-5px) rotate(-1deg); }
+        }
+        .sparkle {
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .book-shelf {
+            background: linear-gradient(180deg, #8b4513 0%, #a0522d 100%);
+            position: relative;
+        }
+        .book-shelf::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #654321, #8b4513, #654321);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .price-tag {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .magical-border {
+            border: 3px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #ff6b6b) border-box;
+            border-radius: 15px;
+        }
+        
+        /* Estilos personalizados para el scroll */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #9333ea, #ec4899);
+            border-radius: 10px;
+        }
+        
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #7c3aed, #db2777);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Header -->
+    <header class="bg-black shadow-2xl sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="text-4xl sparkle">📚</div>
+                    <h1 class="text-3xl font-bold text-white">LIBRERÍA ROKIS</h1>
+                    <div class="text-2xl sparkle">✨</div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#inicio" class="text-white hover:text-yellow-300 transition-colors font-semibold">Inicio</a>
+                    <a href="#productos" class="text-white hover:text-yellow-300 transition-colors font-semibold">Productos</a>
+                    <a href="#servicios" class="text-white hover:text-yellow-300 transition-colors font-semibold">Servicios</a>
+                    <a href="#contacto" class="text-white hover:text-yellow-300 transition-colors font-semibold">Contacto</a>
+                </nav>
+                <div id="headerButtons" class="flex items-center space-x-2">
+                    <button id="loginBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        👤 Iniciar Sesión
+                    </button>
+                    <button id="registerBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        📝 Registrarse
+                    </button>
+                </div>
+                <div id="userButtons" class="flex items-center space-x-2 hidden">
+                    <span id="welcomeUser" class="text-gray-700 font-medium"></span>
+                    <button id="carritoBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        🛒 Carrito (0)
+                    </button>
+                    <button id="seguimientoBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                        🚗 Seguimiento
+                    </button>
+                    <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                        🚪 Salir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero-gradient text-white py-24 relative">
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <div class="floating-animation inline-block text-8xl mb-8">📖</div>
+            <h2 class="text-6xl font-bold mb-6 text-black">✨ Bienvenido a ROKIS ✨</h2>
+            <p class="text-2xl mb-8 max-w-3xl mx-auto font-light text-black">Tu librería mágica donde encontrarás libros, papelería, regalos y mucho más. Un mundo de conocimiento y creatividad te espera las 24 horas del día.</p>
+            <div class="flex justify-center space-x-4 mb-8">
+                <div class="text-4xl sparkle">🌟</div>
+                <div class="text-4xl sparkle" style="animation-delay: 0.5s;">📚</div>
+                <div class="text-4xl sparkle" style="animation-delay: 1s;">🎨</div>
+                <div class="text-4xl sparkle" style="animation-delay: 1.5s;">🎁</div>
+            </div>
+            <button class="magical-border bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-12 py-4 rounded-full font-bold hover:from-yellow-500 hover:to-orange-600 transition-all duration-300 text-xl shadow-2xl transform hover:scale-105">
+                🚀 Explorar Catálogo Mágico
+            </button>
+        </div>
+    </section>
+
+    <!-- Productos Destacados -->
+    <section id="productos" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12 text-black">Nuestros Productos</h3>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div class="card-hover magical-border bg-gradient-to-br from-blue-100 via-blue-50 to-white p-8 rounded-2xl shadow-2xl">
+                    <div class="text-6xl mb-6 text-center floating-animation">📚</div>
+                    <h4 class="text-2xl font-bold mb-4 text-black text-center">Libros Mágicos</h4>
+                    <p class="text-black mb-6 text-center">Novelas, ensayos, textos académicos, literatura infantil y más aventuras por descubrir.</p>
+                    <button class="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white py-3 rounded-full hover:from-blue-600 hover:to-blue-800 transition-all duration-300 font-bold shadow-lg transform hover:scale-105">
+                        ✨ Ver Catálogo
+                    </button>
+                </div>
+
+                <div class="card-hover magical-border bg-gradient-to-br from-green-100 via-green-50 to-white p-8 rounded-2xl shadow-2xl">
+                    <div class="text-6xl mb-6 text-center floating-animation" style="animation-delay: 0.5s;">✏️</div>
+                    <h4 class="text-2xl font-bold mb-4 text-black text-center">Papelería Especial</h4>
+                    <p class="text-black mb-6 text-center">Cuadernos, bolígrafos, material escolar y de oficina para crear maravillas.</p>
+                    <button class="w-full bg-gradient-to-r from-green-500 to-green-700 text-white py-3 rounded-full hover:from-green-600 hover:to-green-800 transition-all duration-300 font-bold shadow-lg transform hover:scale-105">
+                        🌟 Ver Productos
+                    </button>
+                </div>
+
+                <div class="card-hover magical-border bg-gradient-to-br from-pink-100 via-pink-50 to-white p-8 rounded-2xl shadow-2xl">
+                    <div class="text-6xl mb-6 text-center floating-animation" style="animation-delay: 1s;">🎁</div>
+                    <h4 class="text-2xl font-bold mb-4 text-black text-center">Regalos Únicos</h4>
+                    <p class="text-black mb-6 text-center">Artículos únicos, souvenirs y regalos especiales que alegrarán cualquier día.</p>
+                    <button class="w-full bg-gradient-to-r from-pink-500 to-pink-700 text-white py-3 rounded-full hover:from-pink-600 hover:to-pink-800 transition-all duration-300 font-bold shadow-lg transform hover:scale-105">
+                        💝 Descubrir
+                    </button>
+                </div>
+
+                <div class="card-hover magical-border bg-gradient-to-br from-yellow-100 via-yellow-50 to-white p-8 rounded-2xl shadow-2xl">
+                    <div class="text-6xl mb-6 text-center floating-animation" style="animation-delay: 1.5s;">🎨</div>
+                    <h4 class="text-2xl font-bold mb-4 text-black text-center">Arte & Creatividad</h4>
+                    <p class="text-black mb-6 text-center">Materiales para crear, pintar y expresar tu creatividad sin límites.</p>
+                    <button class="w-full bg-gradient-to-r from-yellow-500 to-yellow-700 text-white py-3 rounded-full hover:from-yellow-600 hover:to-yellow-800 transition-all duration-300 font-bold shadow-lg transform hover:scale-105">
+                        🎨 Explorar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Productos Populares -->
+            <div class="book-shelf rounded-3xl p-10 shadow-2xl">
+                <h4 class="text-4xl font-bold mb-8 text-center text-white">🌟 Productos Más Populares 🌟</h4>
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div class="producto-card magical-border bg-gradient-to-br from-white to-blue-50 p-6 rounded-2xl shadow-xl card-hover">
+                        <div class="text-5xl mb-4 text-center sparkle">📖</div>
+                        <h5 class="producto-nombre font-bold mb-3 text-xl text-center text-black">Cien Años de Soledad</h5>
+                        <p class="text-black text-sm mb-2 text-center italic">Gabriel García Márquez</p>
+                        <p class="text-xs text-gray-600 mb-4 text-center">Novela épica del realismo mágico</p>
+                        <div class="flex justify-between items-center">
+                            <span class="producto-precio price-tag">S/ 45.00</span>
+                            <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 text-sm font-bold shadow-lg transform hover:scale-105">
+                                ✨ Agregar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="producto-card magical-border bg-gradient-to-br from-white to-green-50 p-6 rounded-2xl shadow-xl card-hover">
+                        <div class="text-5xl mb-4 text-center sparkle" style="animation-delay: 0.5s;">📝</div>
+                        <h5 class="producto-nombre font-bold mb-3 text-xl text-center text-black">Cuaderno Moleskine</h5>
+                        <p class="text-black text-sm mb-2 text-center italic">Tapa dura premium</p>
+                        <p class="text-xs text-gray-600 mb-4 text-center">192 páginas rayadas, elástico</p>
+                        <div class="flex justify-between items-center">
+                            <span class="producto-precio price-tag">S/ 65.00</span>
+                            <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-full hover:from-green-600 hover:to-teal-600 transition-all duration-300 text-sm font-bold shadow-lg transform hover:scale-105">
+                                🌟 Agregar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="producto-card magical-border bg-gradient-to-br from-white to-yellow-50 p-6 rounded-2xl shadow-xl card-hover">
+                        <div class="text-5xl mb-4 text-center sparkle" style="animation-delay: 1s;">🖊️</div>
+                        <h5 class="producto-nombre font-bold mb-3 text-xl text-center text-black">Set de Bolígrafos</h5>
+                        <p class="text-black text-sm mb-2 text-center italic">Pack 12 colores</p>
+                        <p class="text-xs text-gray-600 mb-4 text-center">Tinta gel, escritura suave</p>
+                        <div class="flex justify-between items-center">
+                            <span class="producto-precio price-tag">S/ 25.00</span>
+                            <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 text-sm font-bold shadow-lg transform hover:scale-105">
+                                🎨 Agregar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="producto-card magical-border bg-gradient-to-br from-white to-pink-50 p-6 rounded-2xl shadow-xl card-hover">
+                        <div class="text-5xl mb-4 text-center sparkle" style="animation-delay: 1.5s;">🎁</div>
+                        <h5 class="producto-nombre font-bold mb-3 text-xl text-center text-black">Taza Personalizada</h5>
+                        <p class="text-black text-sm mb-2 text-center italic">Cerámica premium</p>
+                        <p class="text-xs text-gray-600 mb-4 text-center">Diseño personalizable, 350ml</p>
+                        <div class="flex justify-between items-center">
+                            <span class="producto-precio price-tag">S/ 20.00</span>
+                            <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-2 rounded-full hover:from-pink-600 hover:to-purple-600 transition-all duration-300 text-sm font-bold shadow-lg transform hover:scale-105">
+                                💝 Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicios -->
+    <section id="servicios" class="py-16 bg-gradient-to-r from-purple-100 to-pink-100">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12 text-black">Nuestros Servicios</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg">
+                    <div class="text-4xl mb-4">📦</div>
+                    <h4 class="text-xl font-semibold mb-3">Envío a Domicilio</h4>
+                    <p class="text-gray-600">Recibe tus productos en la comodidad de tu hogar. Envío gratis en compras mayores a $50.</p>
+                    <div class="mt-4 p-3 bg-purple-50 rounded-lg">
+                        <p class="text-sm font-semibold text-purple-700">💳 Pago con Yape disponible</p>
+                        <p class="text-xs text-purple-600">Seguimiento por InDrive</p>
+                    </div>
+                </div>
+
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg">
+                    <div class="text-4xl mb-4">🖨️</div>
+                    <h4 class="text-xl font-semibold mb-3">Impresiones & Copias</h4>
+                    <p class="text-gray-600">Impresiones a color y B/N, copias, anillados, enmicados. Documentos, tesis, trabajos universitarios.</p>
+                    <div class="mt-3 p-2 bg-blue-50 rounded">
+                        <p class="text-xs text-blue-700">📄 Desde S/ 0.10 por hoja</p>
+                    </div>
+                </div>
+
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg">
+                    <div class="text-4xl mb-4">📱</div>
+                    <h4 class="text-xl font-semibold mb-3">Recargas Celular</h4>
+                    <p class="text-gray-600">Recarga tu celular al instante. Todas las operadoras: Claro, Movistar, Bitel, Entel.</p>
+                    <div class="mt-3 p-2 bg-green-50 rounded">
+                        <p class="text-xs text-green-700">⚡ Recarga inmediata 24/7</p>
+                    </div>
+                </div>
+
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h4 class="text-xl font-semibold mb-3">Infografías & Diseño</h4>
+                    <p class="text-gray-600">Creamos infografías, presentaciones, documentos profesionales, CV, tarjetas de presentación.</p>
+                    <div class="mt-3 p-2 bg-purple-50 rounded">
+                        <p class="text-xs text-purple-700">🎨 Diseño profesional desde S/ 15</p>
+                    </div>
+                </div>
+
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg">
+                    <div class="text-4xl mb-4">🔍</div>
+                    <h4 class="text-xl font-semibold mb-3">Búsqueda Especializada</h4>
+                    <p class="text-gray-600">¿No encuentras lo que buscas? Nuestro equipo te ayuda a localizar cualquier libro o producto.</p>
+                </div>
+
+                <div class="text-center bg-white p-6 rounded-xl shadow-lg">
+                    <div class="text-4xl mb-4">📚</div>
+                    <h4 class="text-xl font-semibold mb-3">Lectura Gratuita Online</h4>
+                    <p class="text-gray-600">Lee gratis una selección de libros clásicos y cuentos. ¡Perfecto para conocer antes de comprar!</p>
+                    <div class="mt-3 p-2 bg-yellow-50 rounded">
+                        <p class="text-xs text-yellow-700">📖 100% gratis para atraer más lectores</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Catálogo Completo -->
+    <div id="modalCatalogo" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-2xl max-w-6xl w-full p-8 max-h-[90vh] overflow-y-auto custom-scroll">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-3xl font-bold text-black">✨ Catálogo Completo ROKIS ✨</h3>
+                    <button id="cerrarCatalogo" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+                </div>
+                
+                <!-- Navegación de categorías -->
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button class="categoria-btn active bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-full font-bold" data-categoria="libros">📚 Libros</button>
+                    <button class="categoria-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-bold hover:bg-gray-300" data-categoria="papeleria">✏️ Papelería</button>
+                    <button class="categoria-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-bold hover:bg-gray-300" data-categoria="regalos">🎁 Regalos</button>
+                    <button class="categoria-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-bold hover:bg-gray-300" data-categoria="arte">🎨 Arte</button>
+                    <button class="categoria-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-bold hover:bg-gray-300" data-categoria="aseo">🧴 Aseo Personal</button>
+                    <button class="categoria-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-bold hover:bg-gray-300" data-categoria="limpieza">🧽 Limpieza Hogar</button>
+                    <button class="categoria-btn bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-bold hover:bg-gray-300" data-categoria="servicios">🛠️ Servicios</button>
+                </div>
+
+                <!-- Productos por categoría -->
+                <div id="productos-libros" class="categoria-productos">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">📚 Libros Mágicos</h4>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📖</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Cien Años de Soledad</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Gabriel García Márquez</p>
+                            <p class="text-xs text-gray-500 mb-3">Novela épica del realismo mágico</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 45.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📚</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Don Quijote de la Mancha</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Miguel de Cervantes</p>
+                            <p class="text-xs text-gray-500 mb-3">Clásico de la literatura española</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 38.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📖</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">El Principito</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Antoine de Saint-Exupéry</p>
+                            <p class="text-xs text-gray-500 mb-3">Fábula poética para todas las edades</p>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="producto-precio price-tag text-sm">S/ 25.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                            <button class="btn-leer w-full bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold mt-1" data-libro="principito">
+                                📚 Leer Online GRATIS
+                            </button>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📚</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Orgullo y Prejuicio</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Jane Austen</p>
+                            <p class="text-xs text-gray-500 mb-3">Romance clásico inglés</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 32.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📖</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">1984</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">George Orwell</p>
+                            <p class="text-xs text-gray-500 mb-3">Distopía futurista impactante</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 35.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📚</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Harry Potter (Saga)</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">J.K. Rowling</p>
+                            <p class="text-xs text-gray-500 mb-3">Colección completa 7 libros</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 180.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📖</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Cálculo Diferencial</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Stewart</p>
+                            <p class="text-xs text-gray-500 mb-3">Texto universitario matemáticas</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 120.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📚</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Cuentos Infantiles</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Varios Autores</p>
+                            <p class="text-xs text-gray-500 mb-3">Colección de 20 cuentos ilustrados</p>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="producto-precio price-tag text-sm">S/ 28.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                            <button class="btn-leer w-full bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold mt-1" data-libro="cuentos">
+                                📚 Leer Online GRATIS
+                            </button>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📖</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">La Metamorfosis</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Franz Kafka</p>
+                            <p class="text-xs text-gray-500 mb-3">Relato existencialista clásico</p>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="producto-precio price-tag text-sm">S/ 22.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                            <button class="btn-leer w-full bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold mt-1" data-libro="metamorfosis">
+                                📚 Leer Online GRATIS
+                            </button>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📚</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">El Alquimista</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Paulo Coelho</p>
+                            <p class="text-xs text-gray-500 mb-3">Novela de crecimiento personal</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 30.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📖</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Física Universitaria</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Sears & Zemansky</p>
+                            <p class="text-xs text-gray-500 mb-3">Texto completo con ejercicios</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 150.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📚</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Diccionario RAE</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Real Academia Española</p>
+                            <p class="text-xs text-gray-500 mb-3">Edición actualizada 2023</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 85.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-papeleria" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">✏️ Papelería Especial</h4>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📝</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Cuaderno Moleskine</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Tapa dura premium</p>
+                            <p class="text-xs text-gray-500 mb-3">192 páginas rayadas, elástico</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 65.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🖊️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Set Bolígrafos BIC</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 12 colores</p>
+                            <p class="text-xs text-gray-500 mb-3">Tinta gel, escritura suave</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 25.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📐</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Kit Geométrico</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Regla, escuadra, compás</p>
+                            <p class="text-xs text-gray-500 mb-3">Material resistente, estuche incluido</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧮</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Calculadora Científica</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Casio FX-570ES</p>
+                            <p class="text-xs text-gray-500 mb-3">417 funciones, pantalla natural</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 85.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📎</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Organizador Escritorio</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Bambú natural</p>
+                            <p class="text-xs text-gray-500 mb-3">6 compartimentos, eco-friendly</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 42.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">✂️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Tijeras Profesionales</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Acero inoxidable</p>
+                            <p class="text-xs text-gray-500 mb-3">Ergonómicas, corte preciso</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 15.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📋</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Portapapeles A4</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Madera laminada</p>
+                            <p class="text-xs text-gray-500 mb-3">Clip metálico, superficie lisa</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🗂️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Archivador A-Z</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Cartón resistente</p>
+                            <p class="text-xs text-gray-500 mb-3">26 divisiones alfabéticas</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 22.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📏</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Regla Metálica 30cm</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Acero inoxidable</p>
+                            <p class="text-xs text-gray-500 mb-3">Graduación láser, antideslizante</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 8.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🖇️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Clips Metálicos</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Caja 100 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Tamaños variados, galvanizados</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 6.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📌</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Chinches de Colores</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 50 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Colores surtidos, punta afilada</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 5.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🖨️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Papel Bond A4</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Paquete 500 hojas</p>
+                            <p class="text-xs text-gray-500 mb-3">75g, blanco, alta calidad</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-regalos" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">🎁 Regalos Únicos</h4>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">☕</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Taza Personalizada</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Cerámica premium</p>
+                            <p class="text-xs text-gray-500 mb-3">Diseño personalizable, 350ml</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 20.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🔑</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Llavero Piura</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Souvenir local</p>
+                            <p class="text-xs text-gray-500 mb-3">Metal esmaltado, diseño típico</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 8.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧸</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Peluche Osito</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Suave y tierno</p>
+                            <p class="text-xs text-gray-500 mb-3">25cm, material hipoalergénico</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 35.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🌸</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Marcapáginas Artesanal</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Hecho a mano</p>
+                            <p class="text-xs text-gray-500 mb-3">Diseños florales, set de 3</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎈</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Globos Metálicos</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack celebración</p>
+                            <p class="text-xs text-gray-500 mb-3">10 globos colores surtidos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 15.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">💝</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Caja Regalo Decorada</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Cartón premium</p>
+                            <p class="text-xs text-gray-500 mb-3">Varios tamaños, lazo incluido</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 10.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🌟</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Stickers Holográficos</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Efecto 3D</p>
+                            <p class="text-xs text-gray-500 mb-3">50 stickers variados</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎭</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Máscara Carnaval</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Diseño veneciano</p>
+                            <p class="text-xs text-gray-500 mb-3">Plumas y brillos, elástico</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 25.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎀</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Moños Decorativos</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Satén premium</p>
+                            <p class="text-xs text-gray-500 mb-3">Pack 6 moños, colores variados</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 14.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎪</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Serpentinas Multicolor</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack fiesta</p>
+                            <p class="text-xs text-gray-500 mb-3">12 rollos, papel metalizado</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎂</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Velas de Cumpleaños</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Set números 0-9</p>
+                            <p class="text-xs text-gray-500 mb-3">Cera de colores, mecha larga</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 16.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎨</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Tarjetas de Felicitación</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Diseños variados</p>
+                            <p class="text-xs text-gray-500 mb-3">Pack 10 tarjetas con sobres</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 22.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-arte" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">🎨 Arte & Creatividad</h4>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎨</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Set Acuarelas</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">24 colores profesionales</p>
+                            <p class="text-xs text-gray-500 mb-3">Incluye pinceles y paleta</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 45.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🖼️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Lienzo Preparado</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">30x40 cm</p>
+                            <p class="text-xs text-gray-500 mb-3">100% algodón, imprimado</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 22.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🖌️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Pinceles Profesionales</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Set de 12 pinceles</p>
+                            <p class="text-xs text-gray-500 mb-3">Pelo sintético, varios tamaños</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 38.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🌈</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Témperas Escolares</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">12 tubos x 20ml</p>
+                            <p class="text-xs text-gray-500 mb-3">No tóxicas, lavables</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 28.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">✏️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Lápices de Colores</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Faber-Castell 48 colores</p>
+                            <p class="text-xs text-gray-500 mb-3">Mina resistente, colores vivos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 55.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">📏</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Papel Cartulina</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 20 hojas A4</p>
+                            <p class="text-xs text-gray-500 mb-3">Colores surtidos, 180g</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 16.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧩</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Plastilina Moldeable</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">12 colores x 50g</p>
+                            <p class="text-xs text-gray-500 mb-3">No se endurece, reutilizable</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 24.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">✂️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Kit Manualidades</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Todo en uno</p>
+                            <p class="text-xs text-gray-500 mb-3">Tijeras, pegamento, papel, stickers</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 32.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🖍️</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Crayones Jumbo</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">24 colores grandes</p>
+                            <p class="text-xs text-gray-500 mb-3">Fácil agarre, no tóxicos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎭</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Marcadores Artísticos</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Set 36 colores</p>
+                            <p class="text-xs text-gray-500 mb-3">Doble punta, base alcohol</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 68.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🎪</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Papel Crepe</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 10 rollos</p>
+                            <p class="text-xs text-gray-500 mb-3">Colores variados, 50cm x 2m</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 20.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🌟</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Escarcha Decorativa</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">12 frascos colores</p>
+                            <p class="text-xs text-gray-500 mb-3">Brillos finos, no tóxicos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 26.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-aseo" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">🧴 Productos de Aseo Personal</h4>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Shampoo Pantene</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">400ml Pro-V</p>
+                            <p class="text-xs text-gray-500 mb-3">Reparación y brillo</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧼</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Jabón Dove</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 3 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Hidratación profunda</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🪥</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Pasta Dental Colgate</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">150ml Total 12</p>
+                            <p class="text-xs text-gray-500 mb-3">Protección completa</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 8.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🪒</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Cepillo Dental Oral-B</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Cerdas suaves</p>
+                            <p class="text-xs text-gray-500 mb-3">Limpieza profunda</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 6.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Acondicionador TRESemmé</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">400ml Keratina</p>
+                            <p class="text-xs text-gray-500 mb-3">Cabello liso y suave</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 16.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧼</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Gel de Baño Nivea</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">750ml Fresh</p>
+                            <p class="text-xs text-gray-500 mb-3">Frescura duradera</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 14.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Desodorante Rexona</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">150ml Clinical</p>
+                            <p class="text-xs text-gray-500 mb-3">48h protección</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 11.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧻</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Papel Higiénico Elite</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 12 rollos</p>
+                            <p class="text-xs text-gray-500 mb-3">Doble hoja, suave</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 22.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Crema Dental Sensodyne</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">100ml Repair</p>
+                            <p class="text-xs text-gray-500 mb-3">Dientes sensibles</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 15.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧼</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Jabón Líquido Protex</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">250ml Antibacterial</p>
+                            <p class="text-xs text-gray-500 mb-3">Protección familiar</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 9.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Loción Corporal Nivea</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">400ml Soft</p>
+                            <p class="text-xs text-gray-500 mb-3">Hidratación 48h</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧻</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Toallas Húmedas Huggies</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 80 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Suaves y resistentes</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 13.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-limpieza" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">🧽 Productos de Limpieza del Hogar</h4>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧽</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Detergente Ariel</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">1kg Poder Limpiador</p>
+                            <p class="text-xs text-gray-500 mb-3">Elimina manchas difíciles</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Lavavajillas Sapolio</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">900ml Limón</p>
+                            <p class="text-xs text-gray-500 mb-3">Corta grasa, antibacterial</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 8.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧽</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Esponjas Scotch-Brite</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 6 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Doble cara, resistentes</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 15.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Desinfectante Lysol</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">1L Multiusos</p>
+                            <p class="text-xs text-gray-500 mb-3">Elimina 99.9% gérmenes</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 16.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧹</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Escoba + Recogedor</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Set completo</p>
+                            <p class="text-xs text-gray-500 mb-3">Cerdas sintéticas, mango largo</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 25.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Limpiador de Pisos Fabuloso</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">1L Lavanda</p>
+                            <p class="text-xs text-gray-500 mb-3">Limpia y perfuma</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 9.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧻</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Papel Toalla Elite</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 4 rollos</p>
+                            <p class="text-xs text-gray-500 mb-3">Super absorbente</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Lejía Clorox</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">1L Blanqueadora</p>
+                            <p class="text-xs text-gray-500 mb-3">Desinfecta y blanquea</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 6.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧽</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Paños de Microfibra</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 5 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Multicolor, reutilizables</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Limpia Vidrios Windex</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">500ml Azul</p>
+                            <p class="text-xs text-gray-500 mb-3">Sin rayas, brillo perfecto</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 11.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧹</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Trapeador + Balde</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Sistema giratorio</p>
+                            <p class="text-xs text-gray-500 mb-3">Fácil escurrido, eficiente</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 45.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Ambientador Glade</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">300ml Spray</p>
+                            <p class="text-xs text-gray-500 mb-3">Fragancia duradera</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 14.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-servicios" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">🛠️ Servicios Profesionales</h4>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🖨️</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Impresiones B/N</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Hoja A4 blanco y negro</p>
+                            <p class="text-xs text-gray-500 mb-4">Calidad láser, papel bond 75g</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 0.10</span>
+                                <button class="btn-servicio bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🌈</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Impresiones Color</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Hoja A4 a todo color</p>
+                            <p class="text-xs text-gray-500 mb-4">Alta resolución, colores vivos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 0.50</span>
+                                <button class="btn-servicio bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📋</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Anillado Espiral</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Hasta 200 hojas</p>
+                            <p class="text-xs text-gray-500 mb-4">Tapa transparente y cartulina</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 3.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🛡️</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Enmicado</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Protección de documentos</p>
+                            <p class="text-xs text-gray-500 mb-4">Laminado en caliente A4</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 1.50</span>
+                                <button class="btn-servicio bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📱</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Recarga Claro</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Recarga inmediata</p>
+                            <p class="text-xs text-gray-500 mb-4">Desde S/ 5 hasta S/ 100</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">Variable</span>
+                                <button class="btn-servicio bg-gradient-to-r from-green-500 to-green-700 text-white px-4 py-2 rounded-full text-xs font-bold">Recargar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📞</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Recarga Movistar</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Recarga inmediata</p>
+                            <p class="text-xs text-gray-500 mb-4">Desde S/ 5 hasta S/ 100</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">Variable</span>
+                                <button class="btn-servicio bg-gradient-to-r from-green-500 to-green-700 text-white px-4 py-2 rounded-full text-xs font-bold">Recargar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📊</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Infografía Simple</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Diseño básico A4</p>
+                            <p class="text-xs text-gray-500 mb-4">Hasta 5 elementos gráficos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 15.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📈</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Infografía Premium</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Diseño profesional</p>
+                            <p class="text-xs text-gray-500 mb-4">Elementos ilimitados, animada</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 35.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">💼</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">CV Profesional</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Currículum moderno</p>
+                            <p class="text-xs text-gray-500 mb-4">Diseño atractivo, ATS friendly</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 20.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🎯</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Presentación PPT</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">PowerPoint profesional</p>
+                            <p class="text-xs text-gray-500 mb-4">Hasta 20 diapositivas</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 25.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🏷️</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Tarjeta Presentación</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Diseño + impresión</p>
+                            <p class="text-xs text-gray-500 mb-4">100 tarjetas, papel couché</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 30.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📄</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Formato Documentos</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Tesis, monografías</p>
+                            <p class="text-xs text-gray-500 mb-4">Normas APA, Vancouver, etc.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 2.00/pág</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter -->
+    <section class="py-12 bg-purple-600 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-2xl font-bold mb-4">Mantente al día con nuestras novedades</h3>
+            <p class="mb-6">Suscríbete y recibe ofertas exclusivas y recomendaciones personalizadas</p>
+            <div class="max-w-md mx-auto flex gap-3">
+                <input type="email" placeholder="Tu correo electrónico" class="flex-1 px-4 py-2 rounded-lg text-gray-800">
+                <button class="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    Suscribirse
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contacto" class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="text-2xl">📚</div>
+                        <h4 class="text-xl font-bold">LIBRERÍA ROKIS</h4>
+                    </div>
+                    <p class="text-gray-300">Tu destino para libros, papelería y más. Cultivando el amor por la lectura desde 2025.</p>
+                </div>
+
+                <div>
+                    <h5 class="font-semibold mb-4">Contacto</h5>
+                    <div class="space-y-2 text-gray-300">
+                        <p>📍 Ministerio de Agricultura 305, Campo Polo, Castilla - Piura</p>
+                        <p>📞 901782203</p>
+                        <p>✉️ info@libreriarokis.com</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-semibold mb-4">Horarios ⏰</h5>
+                    <div class="space-y-2 text-gray-300">
+                        <p class="text-yellow-300 font-bold">🌟 ABIERTO 24 HORAS 🌟</p>
+                        <p>Todos los días del año</p>
+                        <p>¡Siempre aquí para ti!</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="font-semibold mb-4">Síguenos</h5>
+                    <div class="flex space-x-4">
+                        <button class="bg-blue-600 p-2 rounded hover:bg-blue-700 transition-colors">📘</button>
+                        <button class="bg-pink-600 p-2 rounded hover:bg-pink-700 transition-colors">📷</button>
+                        <button class="bg-blue-400 p-2 rounded hover:bg-blue-500 transition-colors">🐦</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2025 LIBRERÍA ROKIS. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Login -->
+    <div id="modalLogin" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">👤 Iniciar Sesión</h3>
+                    <button id="cerrarLogin" class="text-gray-500 hover:text-gray-700">✕</button>
+                </div>
+                <form id="formLogin" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                        <input type="email" id="emailLogin" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" id="passwordLogin" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                        Iniciar Sesión
+                    </button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    ¿No tienes cuenta? 
+                    <button id="switchToRegister" class="text-blue-600 hover:text-blue-700 font-medium">Regístrate aquí</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div id="modalRegister" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">📝 Crear Cuenta</h3>
+                    <button id="cerrarRegister" class="text-gray-500 hover:text-gray-700">✕</button>
+                </div>
+                <form id="formRegister" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                        <input type="text" id="nombreRegister" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+                        <input type="email" id="emailRegister" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <input type="tel" id="telefonoRegister" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                        <input type="password" id="passwordRegister" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar Contraseña</label>
+                        <input type="password" id="confirmPasswordRegister" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                        Crear Cuenta
+                    </button>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    ¿Ya tienes cuenta? 
+                    <button id="switchToLogin" class="text-green-600 hover:text-green-700 font-medium">Inicia sesión aquí</button>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal del Carrito -->
+    <div id="modalCarrito" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">🛒 Tu Carrito</h3>
+                    <button id="cerrarCarrito" class="text-gray-500 hover:text-gray-700">✕</button>
+                </div>
+                <div id="listaCarrito" class="space-y-3 mb-4 max-h-60 overflow-y-auto">
+                    <!-- Los productos se agregan aquí -->
+                </div>
+                <div id="totalCarrito" class="border-t pt-3 mb-4">
+                    <p class="text-lg font-bold">Total: $0.00</p>
+                </div>
+                <button id="procederPago" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors font-semibold">
+                    Proceder al Pago con Yape 💳
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pago con Yape -->
+    <div id="modalYape" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6 text-center">
+                <h3 class="text-xl font-bold mb-4">💳 Pago con Yape</h3>
+                <div class="bg-purple-100 p-6 rounded-lg mb-4">
+                    <div class="text-6xl mb-4">📱</div>
+                    <p class="font-semibold mb-2">Número Yape: 901782203</p>
+                    <p class="text-sm text-gray-600 mb-4">Escanea el código QR o transfiere al número</p>
+                    <div id="montoTotal" class="text-2xl font-bold text-purple-600">$0.00</div>
+                </div>
+                <div class="space-y-3">
+                    <input type="text" id="numeroYape" placeholder="Tu número de Yape" class="w-full px-4 py-2 border rounded-lg">
+                    <input type="text" id="codigoOperacion" placeholder="Código de operación" class="w-full px-4 py-2 border rounded-lg">
+                    <button id="confirmarPago" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                        Confirmar Pago
+                    </button>
+                    <button id="cancelarPago" class="w-full bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Seguimiento -->
+    <div id="modalSeguimiento" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">🚗 Seguimiento InDrive</h3>
+                    <button id="cerrarSeguimiento" class="text-gray-500 hover:text-gray-700">✕</button>
+                </div>
+                <div class="space-y-4">
+                    <input type="text" id="codigoPedido" placeholder="Código de pedido" class="w-full px-4 py-2 border rounded-lg">
+                    <button id="buscarPedido" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                        Buscar Pedido
+                    </button>
+                </div>
+                <div id="estadoPedido" class="mt-6 hidden">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">Estado del Pedido:</h4>
+                        <div class="space-y-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span class="text-sm">Pedido confirmado</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span class="text-sm">En preparación</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                                <span class="text-sm">En camino con InDrive</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+                                <span class="text-sm text-gray-500">Entregado</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-50 rounded">
+                            <p class="text-sm"><strong>Conductor:</strong> Carlos M.</p>
+                            <p class="text-sm"><strong>Teléfono:</strong> 987-123-456</p>
+                            <p class="text-sm"><strong>Tiempo estimado:</strong> 15-20 min</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-aseo" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">🧴 Productos de Aseo Personal</h4>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Shampoo Pantene</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">400ml Pro-V</p>
+                            <p class="text-xs text-gray-500 mb-3">Reparación y brillo</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧼</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Jabón Dove</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 3 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Hidratación profunda</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🪥</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Pasta Dental Colgate</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">150ml Total 12</p>
+                            <p class="text-xs text-gray-500 mb-3">Protección completa</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 8.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🪒</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Cepillo Dental Oral-B</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Cerdas suaves</p>
+                            <p class="text-xs text-gray-500 mb-3">Limpieza profunda</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 6.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Acondicionador TRESemmé</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">400ml Keratina</p>
+                            <p class="text-xs text-gray-500 mb-3">Cabello liso y suave</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 16.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧼</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Gel de Baño Nivea</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">750ml Fresh</p>
+                            <p class="text-xs text-gray-500 mb-3">Frescura duradera</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 14.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Desodorante Rexona</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">150ml Clinical</p>
+                            <p class="text-xs text-gray-500 mb-3">48h protección</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 11.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧻</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Papel Higiénico Elite</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 12 rollos</p>
+                            <p class="text-xs text-gray-500 mb-3">Doble hoja, suave</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 22.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Crema Dental Sensodyne</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">100ml Repair</p>
+                            <p class="text-xs text-gray-500 mb-3">Dientes sensibles</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 15.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧼</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Jabón Líquido Protex</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">250ml Antibacterial</p>
+                            <p class="text-xs text-gray-500 mb-3">Protección familiar</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 9.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Loción Corporal Nivea</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">400ml Soft</p>
+                            <p class="text-xs text-gray-500 mb-3">Hidratación 48h</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧻</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Toallas Húmedas Huggies</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 80 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Suaves y resistentes</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 13.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-blue-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-limpieza" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">🧽 Productos de Limpieza del Hogar</h4>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧽</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Detergente Ariel</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">1kg Poder Limpiador</p>
+                            <p class="text-xs text-gray-500 mb-3">Elimina manchas difíciles</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Lavavajillas Sapolio</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">900ml Limón</p>
+                            <p class="text-xs text-gray-500 mb-3">Corta grasa, antibacterial</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 8.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧽</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Esponjas Scotch-Brite</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 6 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Doble cara, resistentes</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 15.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Desinfectante Lysol</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">1L Multiusos</p>
+                            <p class="text-xs text-gray-500 mb-3">Elimina 99.9% gérmenes</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 16.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧹</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Escoba + Recogedor</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Set completo</p>
+                            <p class="text-xs text-gray-500 mb-3">Cerdas sintéticas, mango largo</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 25.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Limpiador de Pisos Fabuloso</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">1L Lavanda</p>
+                            <p class="text-xs text-gray-500 mb-3">Limpia y perfuma</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 9.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧻</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Papel Toalla Elite</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 4 rollos</p>
+                            <p class="text-xs text-gray-500 mb-3">Super absorbente</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 18.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Lejía Clorox</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">1L Blanqueadora</p>
+                            <p class="text-xs text-gray-500 mb-3">Desinfecta y blanquea</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 6.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧽</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Paños de Microfibra</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Pack 5 unidades</p>
+                            <p class="text-xs text-gray-500 mb-3">Multicolor, reutilizables</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 12.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Limpia Vidrios Windex</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">500ml Azul</p>
+                            <p class="text-xs text-gray-500 mb-3">Sin rayas, brillo perfecto</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 11.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧹</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Trapeador + Balde</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Sistema giratorio</p>
+                            <p class="text-xs text-gray-500 mb-3">Fácil escurrido, eficiente</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 45.00</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                        <div class="producto-card magical-border bg-white p-4 rounded-xl shadow-lg card-hover">
+                            <div class="text-4xl mb-3 text-center">🧴</div>
+                            <h5 class="producto-nombre font-bold mb-2 text-center">Ambientador Glade</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">300ml Spray</p>
+                            <p class="text-xs text-gray-500 mb-3">Fragancia duradera</p>
+                            <div class="flex justify-between items-center">
+                                <span class="producto-precio price-tag text-sm">S/ 14.50</span>
+                                <button class="btn-agregar bg-gradient-to-r from-green-500 to-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productos-servicios" class="categoria-productos hidden">
+                    <h4 class="text-2xl font-bold mb-6 text-center text-black">🛠️ Servicios Profesionales</h4>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🖨️</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Impresiones B/N</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Hoja A4 blanco y negro</p>
+                            <p class="text-xs text-gray-500 mb-4">Calidad láser, papel bond 75g</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 0.10</span>
+                                <button class="btn-servicio bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🌈</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Impresiones Color</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Hoja A4 a todo color</p>
+                            <p class="text-xs text-gray-500 mb-4">Alta resolución, colores vivos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 0.50</span>
+                                <button class="btn-servicio bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📋</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Anillado Espiral</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Hasta 200 hojas</p>
+                            <p class="text-xs text-gray-500 mb-4">Tapa transparente y cartulina</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 3.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🛡️</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Enmicado</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Protección de documentos</p>
+                            <p class="text-xs text-gray-500 mb-4">Laminado en caliente A4</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 1.50</span>
+                                <button class="btn-servicio bg-gradient-to-r from-blue-500 to-blue-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📱</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Recarga Claro</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Recarga inmediata</p>
+                            <p class="text-xs text-gray-500 mb-4">Desde S/ 5 hasta S/ 100</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">Variable</span>
+                                <button class="btn-servicio bg-gradient-to-r from-green-500 to-green-700 text-white px-4 py-2 rounded-full text-xs font-bold">Recargar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📞</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Recarga Movistar</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Recarga inmediata</p>
+                            <p class="text-xs text-gray-500 mb-4">Desde S/ 5 hasta S/ 100</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">Variable</span>
+                                <button class="btn-servicio bg-gradient-to-r from-green-500 to-green-700 text-white px-4 py-2 rounded-full text-xs font-bold">Recargar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📊</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Infografía Simple</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Diseño básico A4</p>
+                            <p class="text-xs text-gray-500 mb-4">Hasta 5 elementos gráficos</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 15.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📈</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Infografía Premium</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Diseño profesional</p>
+                            <p class="text-xs text-gray-500 mb-4">Elementos ilimitados, animada</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 35.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">💼</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">CV Profesional</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Currículum moderno</p>
+                            <p class="text-xs text-gray-500 mb-4">Diseño atractivo, ATS friendly</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 20.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🎯</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Presentación PPT</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">PowerPoint profesional</p>
+                            <p class="text-xs text-gray-500 mb-4">Hasta 20 diapositivas</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 25.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">🏷️</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Tarjeta Presentación</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Diseño + impresión</p>
+                            <p class="text-xs text-gray-500 mb-4">100 tarjetas, papel couché</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 30.00</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="producto-card magical-border bg-white p-6 rounded-xl shadow-lg card-hover">
+                            <div class="text-5xl mb-4 text-center">📄</div>
+                            <h5 class="font-bold mb-3 text-xl text-center">Formato Documentos</h5>
+                            <p class="text-gray-600 text-sm mb-2 text-center italic">Tesis, monografías</p>
+                            <p class="text-xs text-gray-500 mb-4">Normas APA, Vancouver, etc.</p>
+                            <div class="flex justify-between items-center">
+                                <span class="price-tag text-sm">S/ 2.00/pág</span>
+                                <button class="btn-servicio bg-gradient-to-r from-purple-500 to-purple-700 text-white px-4 py-2 rounded-full text-xs font-bold">Solicitar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Lectura Online -->
+    <div id="modalLectura" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-full p-4">
+            <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                <div class="flex justify-between items-center p-6 border-b">
+                    <div>
+                        <h3 id="tituloLibro" class="text-2xl font-bold text-black">📚 Lectura Online</h3>
+                        <p id="autorLibro" class="text-gray-600 italic"></p>
+                    </div>
+                    <button id="cerrarLectura" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+                </div>
+                
+                <div class="p-6 max-h-[70vh] overflow-y-auto custom-scroll">
+                    <div id="contenidoLibro" class="prose max-w-none text-gray-800 leading-relaxed">
+                        <!-- El contenido del libro se carga aquí -->
+                    </div>
+                </div>
+                
+                <div class="p-4 border-t bg-gray-50 flex justify-between items-center">
+                    <div class="text-sm text-gray-600">
+                        📖 Lectura gratuita cortesía de LIBRERÍA ROKIS
+                    </div>
+                    <div class="space-x-2">
+                        <button id="btnAnterior" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors">
+                            ← Anterior
+                        </button>
+                        <button id="btnSiguiente" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            Siguiente →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let carrito = [];
+        let contadorCarrito = 0;
+        let totalCarrito = 0;
+        let usuarioActual = null;
+        let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+        let paginaActual = 0;
+        let libroActual = null;
+
+        // Elementos del DOM
+        const modalCarrito = document.getElementById('modalCarrito');
+        const modalYape = document.getElementById('modalYape');
+        const modalSeguimiento = document.getElementById('modalSeguimiento');
+        const modalLogin = document.getElementById('modalLogin');
+        const modalRegister = document.getElementById('modalRegister');
+        const modalLectura = document.getElementById('modalLectura');
+        const carritoBtn = document.getElementById('carritoBtn');
+        const seguimientoBtn = document.getElementById('seguimientoBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const headerButtons = document.getElementById('headerButtons');
+        const userButtons = document.getElementById('userButtons');
+        const welcomeUser = document.getElementById('welcomeUser');
+
+        // Contenido de los libros
+        const libros = {
+            principito: {
+                titulo: "El Principito",
+                autor: "Antoine de Saint-Exupéry",
+                paginas: [
+                    {
+                        titulo: "Capítulo I",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">Capítulo I</h2>
+                            <p class="mb-4">Cuando yo tenía seis años vi una vez una magnífica lámina en un libro sobre la selva virgen que se llamaba "Historias vividas". Representaba una serpiente boa que se tragaba a una fiera. Esta es la copia del dibujo:</p>
+                            
+                            <div class="text-center my-6 p-4 bg-gray-100 rounded-lg">
+                                <div class="text-6xl">🐍</div>
+                                <p class="text-sm text-gray-600 mt-2">Dibujo Número 1</p>
+                            </div>
+                            
+                            <p class="mb-4">En el libro decía: "Las serpientes boas se tragan su presa entera, sin masticarla. Luego ya no pueden moverse y duermen durante los seis meses que dura su digestión".</p>
+                            
+                            <p class="mb-4">Reflexioné mucho en ese momento sobre las aventuras de la jungla y a mi vez logré trazar con un lápiz de color mi primer dibujo. Mi dibujo número 1 era de esta manera:</p>
+                            
+                            <div class="text-center my-6 p-4 bg-gray-100 rounded-lg">
+                                <div class="text-6xl">🎩</div>
+                                <p class="text-sm text-gray-600 mt-2">Mi Dibuño Número 1</p>
+                            </div>
+                            
+                            <p class="mb-4">Enseñé mi obra de arte a las personas mayores y les pregunté si mi dibujo les daba miedo.</p>
+                            
+                            <p class="mb-4">Me contestaron: "¿Por qué habría de asustar un sombrero?"</p>
+                            
+                            <p class="mb-4">Mi dibujo no representaba un sombrero. Representaba una serpiente boa que digiere un elefante. Dibujé entonces el interior de la serpiente boa a fin de que las personas mayores pudieran comprender. Siempre estas personas tienen necesidad de explicaciones.</p>
+                        `
+                    },
+                    {
+                        titulo: "Capítulo II",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">Capítulo II</h2>
+                            <p class="mb-4">Viví así, solo, sin nadie con quien poder hablar verdaderamente, hasta cuando hace seis años tuve una avería en el desierto de Sahara. Algo se había estropeado en el motor. Como no llevaba conmigo ni mecánico ni pasajeros, me dispuse a realizar, yo solo, una reparación difícil.</p>
+                            
+                            <p class="mb-4">Era para mí una cuestión de vida o muerte, pues apenas tenía agua de beber para ocho días.</p>
+                            
+                            <p class="mb-4">La primera noche me dormí sobre la arena a mil millas de distancia del lugar habitado más próximo. Estaba más aislado que un náufrago en una balsa en medio del océano.</p>
+                            
+                            <div class="text-center my-6 p-4 bg-yellow-100 rounded-lg">
+                                <div class="text-6xl">🌟</div>
+                                <p class="text-sm text-gray-600 mt-2">El desierto bajo las estrellas</p>
+                            </div>
+                            
+                            <p class="mb-4">Imagínense, pues, mi sorpresa cuando al amanecer me despertó una extraña vocecita que decía:</p>
+                            
+                            <p class="mb-4 italic text-blue-600">—Por favor... ¡dibújame un cordero!</p>
+                            
+                            <p class="mb-4">—¿Eh?</p>
+                            
+                            <p class="mb-4 italic text-blue-600">—¡Dibújame un cordero!</p>
+                            
+                            <p class="mb-4">Me puse en pie de un salto como herido por el rayo. Me froté los ojos. Miré a mi alrededor. Vi a un extraordinario muchachito que me miraba gravemente.</p>
+                        `
+                    },
+                    {
+                        titulo: "Capítulo III",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">Capítulo III</h2>
+                            <p class="mb-4">Necesité mucho tiempo para comprender de dónde venía. El principito, que me hacía muchas preguntas, jamás parecía oír las mías. Fueron palabras pronunciadas al azar las que, poco a poco, me revelaron todo.</p>
+                            
+                            <p class="mb-4">Así, cuando distinguió por primera vez mi avión (no dibujaré mi avión, por ser un dibujo demasiado complicado para mí), me preguntó:</p>
+                            
+                            <p class="mb-4 italic text-blue-600">—¿Qué cosa es esa?</p>
+                            
+                            <p class="mb-4">—Eso no es una cosa. Eso vuela. Es un avión. Es mi avión.</p>
+                            
+                            <div class="text-center my-6 p-4 bg-blue-100 rounded-lg">
+                                <div class="text-6xl">✈️</div>
+                                <p class="text-sm text-gray-600 mt-2">Mi avión en el desierto</p>
+                            </div>
+                            
+                            <p class="mb-4">Y me sentí orgulloso de hacerle saber que volaba. Entonces gritó:</p>
+                            
+                            <p class="mb-4 italic text-blue-600">—¡Cómo! ¿Tú también caíste del cielo?</p>
+                            
+                            <p class="mb-4">—Sí —dije modestamente.</p>
+                            
+                            <p class="mb-4 italic text-blue-600">—¡Ah! Eso sí que es gracioso...</p>
+                            
+                            <p class="mb-4">Y el principito tuvo una carcajada que me irritó mucho. Deseo que mis desgracias sean tomadas en serio.</p>
+                        `
+                    }
+                ]
+            },
+            metamorfosis: {
+                titulo: "La Metamorfosis",
+                autor: "Franz Kafka",
+                paginas: [
+                    {
+                        titulo: "Capítulo I - El Despertar",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">Capítulo I</h2>
+                            <p class="mb-4">Al despertar Gregorio Samsa una mañana, tras un sueño intranquilo, se encontró en su cama convertido en un monstruoso insecto.</p>
+                            
+                            <p class="mb-4">Estaba echado sobre el duro caparazón de su espalda, y, al alzar un poco la cabeza, vio la figura convexa de su vientre oscuro, surcado por curvadas callosidades, cuya prominencia apenas si podía aguantar la colcha, que estaba visiblemente a punto de escurrirse hasta el suelo.</p>
+                            
+                            <div class="text-center my-6 p-4 bg-gray-100 rounded-lg">
+                                <div class="text-6xl">🪲</div>
+                                <p class="text-sm text-gray-600 mt-2">La transformación de Gregorio</p>
+                            </div>
+                            
+                            <p class="mb-4">Sus numerosas patas, que eran penosamente delgadas en comparación con el grosor ordinario de sus piernas, le temblaban desamparadas ante los ojos.</p>
+                            
+                            <p class="mb-4">"¿Qué me ha ocurrido?", pensó. No era un sueño. Su habitación, una habitación humana corriente, aunque muy reducida, permanecía tranquila entre las cuatro paredes harto conocidas.</p>
+                            
+                            <p class="mb-4">Sobre la mesa había desparramado un muestrario de paños —Samsa era viajante de comercio—, y de la pared colgaba una estampa recientemente recortada de una revista ilustrada y puesta en un marco dorado.</p>
+                        `
+                    },
+                    {
+                        titulo: "Capítulo I - Los Pensamientos",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">Los Pensamientos de Gregorio</h2>
+                            <p class="mb-4">La estampa mostraba a una mujer tocada con un gorro de pieles, envuelta en una estola también de pieles, y que, erguida, esgrimía un pesado manguito, asimismo de piel, que ocultaba todo su antebrazo.</p>
+                            
+                            <p class="mb-4">Gregorio dirigió entonces la vista hacia la ventana, y el tiempo lluvioso —se oían las gotas repiquetear en la chapa del alféizar— le puso muy melancólico.</p>
+                            
+                            <div class="text-center my-6 p-4 bg-blue-100 rounded-lg">
+                                <div class="text-6xl">🌧️</div>
+                                <p class="text-sm text-gray-600 mt-2">La mañana lluviosa</p>
+                            </div>
+                            
+                            <p class="mb-4">"¿Y si siguiese durmiendo un rato y me olvidase de todas las chifladas?", pensó; pero no era posible, pues tenía la costumbre de dormir sobre el lado derecho, y en su actual estado no podía ponerse en tal postura.</p>
+                            
+                            <p class="mb-4">Por más que se esforzara echándose hacia el lado derecho, volvía a quedar de espaldas. Intentó el cambio tal vez cien veces, cerrando los ojos para no ver las patas que se agitaban, y sólo desistió cuando comenzó a sentir en el costado un dolor leve y punzante, jamás experimentado hasta entonces.</p>
+                        `
+                    },
+                    {
+                        titulo: "Capítulo I - El Trabajo",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">Reflexiones sobre el Trabajo</h2>
+                            <p class="mb-4">"¡Dios mío!", pensó, "¡qué profesión tan fatigosa he elegido! Un día sí y otro también de viaje. Las preocupaciones de los negocios son mucho mayores cuando se trabaja fuera que cuando se trabaja en el almacén, y, además de eso, tengo que cargar con las molestias de los viajes, con la preocupación de los enlaces de los trenes, con las comidas malas y a deshora, con un trato humano que cambia constantemente, que nunca llega a ser cordial y en el que no caben los sentimientos."</p>
+                            
+                            <div class="text-center my-6 p-4 bg-yellow-100 rounded-lg">
+                                <div class="text-6xl">💼</div>
+                                <p class="text-sm text-gray-600 mt-2">La vida del viajante</p>
+                            </div>
+                            
+                            <p class="mb-4">"¡Al diablo con todo!" Se sintió en el vientre una ligera picazón; se deslizó lentamente de espaldas hacia la cabecera de la cama, para poder alzar mejor la cabeza; se rascó el sitio que le picaba, y volvió a echarse, porque al tocar aquel sitio se le erizaron escalofríos.</p>
+                            
+                            <p class="mb-4">Se deslizó de nuevo a su posición anterior. "Esto de madrugar tanto", pensó, "hace a uno desvariar completamente. El hombre necesita dormir."</p>
+                        `
+                    }
+                ]
+            },
+            cuentos: {
+                titulo: "Cuentos Infantiles Clásicos",
+                autor: "Varios Autores",
+                paginas: [
+                    {
+                        titulo: "Los Tres Cerditos",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">Los Tres Cerditos</h2>
+                            <p class="mb-4">Había una vez tres cerditos que decidieron construir sus propias casas para vivir independientes y seguros.</p>
+                            
+                            <div class="text-center my-6 p-4 bg-pink-100 rounded-lg">
+                                <div class="text-6xl">🐷🐷🐷</div>
+                                <p class="text-sm text-gray-600 mt-2">Los tres hermanos cerditos</p>
+                            </div>
+                            
+                            <p class="mb-4">El primer cerdito, que era muy perezoso, construyó su casa de paja. "¡Qué fácil y rápido!", dijo mientras terminaba en una hora.</p>
+                            
+                            <p class="mb-4">El segundo cerdito construyó su casa de madera. "Es más fuerte que la paja", pensó, y tardó medio día en terminarla.</p>
+                            
+                            <p class="mb-4">El tercer cerdito, que era muy trabajador, construyó su casa de ladrillos. Tardó varios días, pero quedó muy sólida y resistente.</p>
+                            
+                            <div class="text-center my-6 p-4 bg-gray-100 rounded-lg">
+                                <div class="text-6xl">🏠🏠🏠</div>
+                                <p class="text-sm text-gray-600 mt-2">Las tres casitas</p>
+                            </div>
+                            
+                            <p class="mb-4">Un día apareció el lobo feroz, que tenía mucha hambre y quería comerse a los cerditos.</p>
+                            
+                            <p class="mb-4">"¡Soplaré y soplaré y tu casa derribaré!", gritó el lobo en la casa de paja. Y de un soplido, la casa se desplomó.</p>
+                        `
+                    },
+                    {
+                        titulo: "Caperucita Roja",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">Caperucita Roja</h2>
+                            <p class="mb-4">Había una vez una niña muy dulce que vivía con su mamá en una casita cerca del bosque. Todos la llamaban Caperucita Roja porque siempre llevaba puesta una caperuza de color rojo que le había regalado su abuelita.</p>
+                            
+                            <div class="text-center my-6 p-4 bg-red-100 rounded-lg">
+                                <div class="text-6xl">👧🔴</div>
+                                <p class="text-sm text-gray-600 mt-2">Caperucita con su caperuza roja</p>
+                            </div>
+                            
+                            <p class="mb-4">Un día, la mamá de Caperucita le dijo: "Hija, tu abuelita está enferma. ¿Podrías llevarle esta canasta con comida y medicinas?"</p>
+                            
+                            <p class="mb-4">"¡Por supuesto, mamá!", respondió Caperucita alegremente. "Iré por el sendero del bosque."</p>
+                            
+                            <p class="mb-4">"Ten mucho cuidado", le advirtió su mamá. "No te desvíes del camino y no hables con extraños."</p>
+                            
+                            <div class="text-center my-6 p-4 bg-green-100 rounded-lg">
+                                <div class="text-6xl">🧺🌲</div>
+                                <p class="text-sm text-gray-600 mt-2">Caperucita en el bosque</p>
+                            </div>
+                            
+                            <p class="mb-4">Caperucita se despidió de su mamá y se dirigió hacia el bosque, cantando alegremente mientras caminaba por el sendero.</p>
+                        `
+                    },
+                    {
+                        titulo: "La Cenicienta",
+                        contenido: `
+                            <h2 class="text-2xl font-bold mb-4">La Cenicienta</h2>
+                            <p class="mb-4">Había una vez una joven muy hermosa y bondadosa llamada Cenicienta, que vivía con su madrastra y sus dos hermanastras, quienes la trataban muy mal y la obligaban a hacer todos los quehaceres de la casa.</p>
+                            
+                            <div class="text-center my-6 p-4 bg-blue-100 rounded-lg">
+                                <div class="text-6xl">👸✨</div>
+                                <p class="text-sm text-gray-600 mt-2">Cenicienta trabajando</p>
+                            </div>
+                            
+                            <p class="mb-4">Cenicienta tenía que limpiar, cocinar, lavar y planchar desde muy temprano hasta muy tarde. Sus hermanastras se burlaban de ella y la llamaban "Cenicienta" porque siempre estaba cubierta de ceniza de la chimenea.</p>
+                            
+                            <p class="mb-4">Un día llegó una invitación del palacio real: el príncipe daría un gran baile para encontrar esposa, y todas las jóvenes del reino estaban invitadas.</p>
+                            
+                            <p class="mb-4">"¡Qué emocionante!", gritaron las hermanastras. "¡Tenemos que comprar los vestidos más hermosos!"</p>
+                            
+                            <div class="text-center my-6 p-4 bg-purple-100 rounded-lg">
+                                <div class="text-6xl">👗💃</div>
+                                <p class="text-sm text-gray-600 mt-2">Preparándose para el baile</p>
+                            </div>
+                            
+                            <p class="mb-4">Cenicienta también quería ir al baile, pero su madrastra se rió de ella: "¿Tú? ¡Ni lo sueñes! Tienes mucho trabajo que hacer."</p>
+                        `
+                    }
+                ]
+            }
+        };
+
+        // Verificar si hay usuario logueado al cargar la página
+        const usuarioGuardado = localStorage.getItem('usuarioActual');
+        if (usuarioGuardado) {
+            usuarioActual = JSON.parse(usuarioGuardado);
+            mostrarUsuarioLogueado();
+        }
+
+        // Funciones de autenticación
+        function mostrarUsuarioLogueado() {
+            headerButtons.classList.add('hidden');
+            userButtons.classList.remove('hidden');
+            welcomeUser.textContent = `¡Hola, ${usuarioActual.nombre}!`;
+        }
+
+        function cerrarSesion() {
+            usuarioActual = null;
+            localStorage.removeItem('usuarioActual');
+            headerButtons.classList.remove('hidden');
+            userButtons.classList.add('hidden');
+            carrito = [];
+            contadorCarrito = 0;
+            totalCarrito = 0;
+            if (carritoBtn) carritoBtn.textContent = '🛒 Carrito (0)';
+            mostrarMensaje('Sesión cerrada correctamente');
+        }
+
+        function validarAcceso() {
+            if (!usuarioActual) {
+                mostrarMensaje('Debes iniciar sesión para acceder a esta función');
+                modalLogin.classList.remove('hidden');
+                return false;
+            }
+            return true;
+        }
+
+        // Event listeners para autenticación
+        loginBtn.addEventListener('click', () => {
+            modalLogin.classList.remove('hidden');
+        });
+
+        registerBtn.addEventListener('click', () => {
+            modalRegister.classList.remove('hidden');
+        });
+
+        logoutBtn.addEventListener('click', cerrarSesion);
+
+        // Cerrar modales de autenticación
+        document.getElementById('cerrarLogin').addEventListener('click', () => {
+            modalLogin.classList.add('hidden');
+        });
+
+        document.getElementById('cerrarRegister').addEventListener('click', () => {
+            modalRegister.classList.add('hidden');
+        });
+
+        // Cambiar entre login y registro
+        document.getElementById('switchToRegister').addEventListener('click', () => {
+            modalLogin.classList.add('hidden');
+            modalRegister.classList.remove('hidden');
+        });
+
+        document.getElementById('switchToLogin').addEventListener('click', () => {
+            modalRegister.classList.add('hidden');
+            modalLogin.classList.remove('hidden');
+        });
+
+        // Formulario de registro
+        document.getElementById('formRegister').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('nombreRegister').value;
+            const email = document.getElementById('emailRegister').value;
+            const telefono = document.getElementById('telefonoRegister').value;
+            const password = document.getElementById('passwordRegister').value;
+            const confirmPassword = document.getElementById('confirmPasswordRegister').value;
+
+            // Validaciones
+            if (password !== confirmPassword) {
+                mostrarMensaje('Las contraseñas no coinciden');
+                return;
+            }
+
+            if (password.length < 6) {
+                mostrarMensaje('La contraseña debe tener al menos 6 caracteres');
+                return;
+            }
+
+            // Verificar si el email ya existe
+            if (usuarios.find(u => u.email === email)) {
+                mostrarMensaje('Este correo ya está registrado');
+                return;
+            }
+
+            // Crear nuevo usuario
+            const nuevoUsuario = {
+                id: Date.now(),
+                nombre,
+                email,
+                telefono,
+                password,
+                fechaRegistro: new Date().toISOString()
+            };
+
+            usuarios.push(nuevoUsuario);
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+            usuarioActual = nuevoUsuario;
+            localStorage.setItem('usuarioActual', JSON.stringify(usuarioActual));
+
+            modalRegister.classList.add('hidden');
+            mostrarUsuarioLogueado();
+            mostrarMensaje(`¡Bienvenido ${nombre}! Tu cuenta ha sido creada exitosamente`);
+
+            // Limpiar formulario
+            document.getElementById('formRegister').reset();
+        });
+
+        // Formulario de login
+        document.getElementById('formLogin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('emailLogin').value;
+            const password = document.getElementById('passwordLogin').value;
+
+            // Buscar usuario
+            const usuario = usuarios.find(u => u.email === email && u.password === password);
+
+            if (usuario) {
+                usuarioActual = usuario;
+                localStorage.setItem('usuarioActual', JSON.stringify(usuarioActual));
+                modalLogin.classList.add('hidden');
+                mostrarUsuarioLogueado();
+                mostrarMensaje(`¡Bienvenido de nuevo, ${usuario.nombre}!`);
+                document.getElementById('formLogin').reset();
+            } else {
+                mostrarMensaje('Correo o contraseña incorrectos');
+            }
+        });
+
+        // Función para agregar productos al carrito
+        function agregarAlCarrito(nombre, precio, precioTexto) {
+            if (!validarAcceso()) return;
+            
+            carrito.push({nombre, precio, precioTexto});
+            contadorCarrito++;
+            totalCarrito += precio;
+            
+            // Actualizar contador del carrito
+            carritoBtn.textContent = `🛒 Carrito (${contadorCarrito})`;
+            
+            // Mostrar mensaje de confirmación
+            mostrarMensaje(`${nombre} agregado al carrito`);
+        }
+
+        // Event delegation para botones de agregar y servicios
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-agregar')) {
+                const producto = e.target.closest('.producto-card');
+                const nombre = producto.querySelector('.producto-nombre').textContent;
+                const precioTexto = producto.querySelector('.producto-precio').textContent;
+                const precio = parseFloat(precioTexto.replace('S/ ', ''));
+                
+                agregarAlCarrito(nombre, precio, precioTexto);
+            }
+            
+            if (e.target.classList.contains('btn-servicio')) {
+                if (!validarAcceso()) return;
+                
+                const servicio = e.target.closest('.producto-card');
+                const nombre = servicio.querySelector('h5').textContent;
+                
+                if (nombre.includes('Recarga')) {
+                    mostrarModalRecarga(nombre);
+                } else {
+                    mostrarModalServicio(nombre);
+                }
+            }
+        });
+
+        // Función para mostrar modal de recarga
+        function mostrarModalRecarga(operadora) {
+            const modalRecarga = document.createElement('div');
+            modalRecarga.className = 'fixed inset-0 bg-black bg-opacity-50 z-50';
+            modalRecarga.innerHTML = `
+                <div class="flex items-center justify-center min-h-full p-4">
+                    <div class="bg-white rounded-xl max-w-md w-full p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">📱 ${operadora}</h3>
+                            <button class="cerrar-modal text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Número de teléfono</label>
+                                <input type="tel" class="numero-recarga w-full px-4 py-2 border rounded-lg" placeholder="987654321">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Monto de recarga</label>
+                                <select class="monto-recarga w-full px-4 py-2 border rounded-lg">
+                                    <option value="5">S/ 5.00</option>
+                                    <option value="10">S/ 10.00</option>
+                                    <option value="15">S/ 15.00</option>
+                                    <option value="20">S/ 20.00</option>
+                                    <option value="30">S/ 30.00</option>
+                                    <option value="50">S/ 50.00</option>
+                                    <option value="100">S/ 100.00</option>
+                                </select>
+                            </div>
+                            <button class="confirmar-recarga w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                                Confirmar Recarga
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modalRecarga);
+            
+            modalRecarga.querySelector('.cerrar-modal').addEventListener('click', () => {
+                document.body.removeChild(modalRecarga);
+            });
+            
+            modalRecarga.querySelector('.confirmar-recarga').addEventListener('click', () => {
+                const numero = modalRecarga.querySelector('.numero-recarga').value;
+                const monto = modalRecarga.querySelector('.monto-recarga').value;
+                
+                if (!numero || numero.length < 9) {
+                    mostrarMensaje('Por favor ingresa un número válido');
+                    return;
+                }
+                
+                mostrarMensaje(`Recarga de S/ ${monto} enviada al ${numero}. ¡Recarga exitosa!`);
+                document.body.removeChild(modalRecarga);
+            });
+        }
+
+        // Función para mostrar modal de servicio
+        function mostrarModalServicio(servicio) {
+            const modalServicio = document.createElement('div');
+            modalServicio.className = 'fixed inset-0 bg-black bg-opacity-50 z-50';
+            modalServicio.innerHTML = `
+                <div class="flex items-center justify-center min-h-full p-4">
+                    <div class="bg-white rounded-xl max-w-md w-full p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">🛠️ ${servicio}</h3>
+                            <button class="cerrar-modal text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Descripción del trabajo</label>
+                                <textarea class="descripcion-servicio w-full px-4 py-2 border rounded-lg h-24" placeholder="Describe qué necesitas..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tu teléfono de contacto</label>
+                                <input type="tel" class="telefono-servicio w-full px-4 py-2 border rounded-lg" placeholder="987654321">
+                            </div>
+                            <div class="bg-blue-50 p-3 rounded-lg">
+                                <p class="text-sm text-blue-700">📞 Te contactaremos en 15 minutos para coordinar los detalles y el presupuesto final.</p>
+                            </div>
+                            <button class="solicitar-servicio w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors font-semibold">
+                                Solicitar Servicio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modalServicio);
+            
+            modalServicio.querySelector('.cerrar-modal').addEventListener('click', () => {
+                document.body.removeChild(modalServicio);
+            });
+            
+            modalServicio.querySelector('.solicitar-servicio').addEventListener('click', () => {
+                const descripcion = modalServicio.querySelector('.descripcion-servicio').value;
+                const telefono = modalServicio.querySelector('.telefono-servicio').value;
+                
+                if (!descripcion || !telefono) {
+                    mostrarMensaje('Por favor completa todos los campos');
+                    return;
+                }
+                
+                const codigo = 'SRV' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                mostrarMensaje(`Solicitud enviada. Código: ${codigo}. Te contactaremos pronto al ${telefono}`);
+                document.body.removeChild(modalServicio);
+            });
+        }
+
+        // Mostrar carrito
+        carritoBtn.addEventListener('click', function() {
+            if (!validarAcceso()) return;
+            actualizarVistaCarrito();
+            modalCarrito.classList.remove('hidden');
+        });
+
+        // Cerrar carrito
+        document.getElementById('cerrarCarrito').addEventListener('click', function() {
+            modalCarrito.classList.add('hidden');
+        });
+
+        // Actualizar vista del carrito
+        function actualizarVistaCarrito() {
+            const listaCarrito = document.getElementById('listaCarrito');
+            const totalCarritoElement = document.getElementById('totalCarrito');
+            
+            if (carrito.length === 0) {
+                listaCarrito.innerHTML = '<p class="text-gray-500 text-center py-4">Tu carrito está vacío</p>';
+            } else {
+                listaCarrito.innerHTML = carrito.map((item, index) => `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-semibold">${item.nombre}</p>
+                            <p class="text-purple-600">${item.precioTexto}</p>
+                        </div>
+                        <button onclick="eliminarDelCarrito(${index})" class="text-red-500 hover:text-red-700">🗑️</button>
+                    </div>
+                `).join('');
+            }
+            
+            totalCarritoElement.innerHTML = `<p class="text-lg font-bold">Total: $${totalCarrito.toFixed(2)}</p>`;
+        }
+
+        // Eliminar del carrito
+        function eliminarDelCarrito(index) {
+            totalCarrito -= carrito[index].precio;
+            carrito.splice(index, 1);
+            contadorCarrito--;
+            carritoBtn.textContent = `🛒 Carrito (${contadorCarrito})`;
+            actualizarVistaCarrito();
+        }
+
+        // Proceder al pago
+        document.getElementById('procederPago').addEventListener('click', function() {
+            if (carrito.length === 0) {
+                mostrarMensaje('Tu carrito está vacío');
+                return;
+            }
+            modalCarrito.classList.add('hidden');
+            document.getElementById('montoTotal').textContent = `$${totalCarrito.toFixed(2)}`;
+            modalYape.classList.remove('hidden');
+        });
+
+        // Confirmar pago
+        document.getElementById('confirmarPago').addEventListener('click', function() {
+            const numeroYape = document.getElementById('numeroYape').value;
+            const codigoOperacion = document.getElementById('codigoOperacion').value;
+            
+            if (!numeroYape || !codigoOperacion) {
+                mostrarMensaje('Por favor completa todos los campos');
+                return;
+            }
+            
+            // Generar código de pedido
+            const codigoPedido = 'ROKIS' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            
+            modalYape.classList.add('hidden');
+            mostrarMensaje(`¡Pago confirmado! Tu código de pedido es: ${codigoPedido}. Puedes hacer seguimiento con InDrive.`);
+            
+            // Limpiar carrito
+            carrito = [];
+            contadorCarrito = 0;
+            totalCarrito = 0;
+            carritoBtn.textContent = '🛒 Carrito (0)';
+            
+            // Limpiar formulario
+            document.getElementById('numeroYape').value = '';
+            document.getElementById('codigoOperacion').value = '';
+        });
+
+        // Cancelar pago
+        document.getElementById('cancelarPago').addEventListener('click', function() {
+            modalYape.classList.add('hidden');
+        });
+
+        // Mostrar seguimiento
+        seguimientoBtn.addEventListener('click', function() {
+            if (!validarAcceso()) return;
+            modalSeguimiento.classList.remove('hidden');
+        });
+
+        // Cerrar seguimiento
+        document.getElementById('cerrarSeguimiento').addEventListener('click', function() {
+            modalSeguimiento.classList.add('hidden');
+        });
+
+        // Buscar pedido
+        document.getElementById('buscarPedido').addEventListener('click', function() {
+            const codigoPedido = document.getElementById('codigoPedido').value;
+            
+            if (!codigoPedido) {
+                mostrarMensaje('Por favor ingresa un código de pedido');
+                return;
+            }
+            
+            if (codigoPedido.startsWith('ROKIS')) {
+                document.getElementById('estadoPedido').classList.remove('hidden');
+                mostrarMensaje('Pedido encontrado');
+            } else {
+                mostrarMensaje('Código de pedido no encontrado');
+            }
+        });
+
+        // Navegación suave
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({behavior: 'smooth'});
+                }
+            });
+        });
+
+        // Suscripción al newsletter
+        const formNewsletter = document.querySelector('input[type="email"]').parentElement;
+        const botonSuscribir = formNewsletter.querySelector('button');
+        
+        botonSuscribir.addEventListener('click', function(e) {
+            e.preventDefault();
+            const email = formNewsletter.querySelector('input').value;
+            if (email && email.includes('@')) {
+                mostrarMensaje('¡Gracias por suscribirte! Recibirás nuestras novedades pronto.');
+                formNewsletter.querySelector('input').value = '';
+            } else {
+                mostrarMensaje('Por favor, ingresa un correo electrónico válido.');
+            }
+        });
+
+        // Función para mostrar mensajes
+        function mostrarMensaje(mensaje) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+            toast.textContent = mensaje;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Botones de explorar catálogo
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.includes('Explorar') || 
+                button.textContent.includes('Ver') || 
+                button.textContent.includes('Descubrir')) {
+                button.addEventListener('click', function() {
+                    document.getElementById('productos').scrollIntoView({behavior: 'smooth'});
+                });
+            }
+        });
+
+        // Variables para el catálogo
+        const modalCatalogo = document.getElementById('modalCatalogo');
+        
+        // Abrir catálogo
+        document.querySelectorAll('button').forEach(button => {
+            if (button.textContent.includes('Ver Catálogo') || 
+                button.textContent.includes('Ver Productos') || 
+                button.textContent.includes('Descubrir') || 
+                button.textContent.includes('Explorar') ||
+                button.textContent.includes('Explorar Catálogo Mágico')) {
+                button.addEventListener('click', function() {
+                    modalCatalogo.classList.remove('hidden');
+                });
+            }
+        });
+
+        // Cerrar catálogo
+        document.getElementById('cerrarCatalogo').addEventListener('click', function() {
+            modalCatalogo.classList.add('hidden');
+        });
+
+        // Navegación entre categorías
+        document.querySelectorAll('.categoria-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const categoria = this.dataset.categoria;
+                
+                // Actualizar botones activos
+                document.querySelectorAll('.categoria-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-gradient-to-r', 'from-blue-500', 'to-blue-700', 'text-white');
+                    b.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                
+                this.classList.add('active', 'bg-gradient-to-r', 'from-blue-500', 'to-blue-700', 'text-white');
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+                
+                // Mostrar productos de la categoría
+                document.querySelectorAll('.categoria-productos').forEach(prod => {
+                    prod.classList.add('hidden');
+                });
+                
+                document.getElementById(`productos-${categoria}`).classList.remove('hidden');
+            });
+        });
+
+        // Funciones de lectura online
+        function abrirLibro(libroId) {
+            libroActual = libros[libroId];
+            paginaActual = 0;
+            
+            if (!libroActual) {
+                mostrarMensaje('Libro no disponible');
+                return;
+            }
+            
+            document.getElementById('tituloLibro').textContent = `📚 ${libroActual.titulo}`;
+            document.getElementById('autorLibro').textContent = libroActual.autor;
+            
+            mostrarPagina();
+            modalLectura.classList.remove('hidden');
+        }
+        
+        function mostrarPagina() {
+            const contenido = document.getElementById('contenidoLibro');
+            const pagina = libroActual.paginas[paginaActual];
+            
+            contenido.innerHTML = pagina.contenido;
+            
+            // Actualizar botones de navegación
+            const btnAnterior = document.getElementById('btnAnterior');
+            const btnSiguiente = document.getElementById('btnSiguiente');
+            
+            btnAnterior.disabled = paginaActual === 0;
+            btnSiguiente.disabled = paginaActual === libroActual.paginas.length - 1;
+            
+            if (btnAnterior.disabled) {
+                btnAnterior.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnAnterior.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+            
+            if (btnSiguiente.disabled) {
+                btnSiguiente.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                btnSiguiente.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        
+        // Event listeners para lectura
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-leer')) {
+                const libroId = e.target.dataset.libro;
+                abrirLibro(libroId);
+            }
+        });
+        
+        // Cerrar modal de lectura
+        document.getElementById('cerrarLectura').addEventListener('click', function() {
+            modalLectura.classList.add('hidden');
+        });
+        
+        // Navegación de páginas
+        document.getElementById('btnAnterior').addEventListener('click', function() {
+            if (paginaActual > 0) {
+                paginaActual--;
+                mostrarPagina();
+            }
+        });
+        
+        document.getElementById('btnSiguiente').addEventListener('click', function() {
+            if (paginaActual < libroActual.paginas.length - 1) {
+                paginaActual++;
+                mostrarPagina();
+            }
+        });
+
+        // Cerrar modales al hacer clic fuera
+        [modalCarrito, modalYape, modalSeguimiento, modalLogin, modalRegister, modalCatalogo, modalLectura].forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f18945b4590c0a',t:'MTc2MDU1NDU4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
